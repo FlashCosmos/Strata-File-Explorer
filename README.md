@@ -10,8 +10,8 @@
 </p>
 
 <p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=FlashCosmos.strata-file-explorer"><img src="https://img.shields.io/visual-studio-marketplace/v/FlashCosmos.strata-file-explorer?color=1e1e24&label=Marketplace" alt="Marketplace Version" /></a>
-  <a href="https://marketplace.visualstudio.com/items?itemName=FlashCosmos.strata-file-explorer"><img src="https://img.shields.io/visual-studio-marketplace/i/FlashCosmos.strata-file-explorer?color=1e1e24" alt="Installs" /></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=FlashCosmos.strata-file-explorer"><img src="https://img.shields.io/badge/VS%20Marketplace-Strata%20File%20Explorer-1e1e24" alt="VS Marketplace" /></a>
+  <img src="https://img.shields.io/badge/VS%20Code-1.84%2B-1e1e24" alt="VS Code 1.84+" />
   <img src="https://img.shields.io/badge/license-MIT-1e1e24" alt="MIT License" />
 </p>
 

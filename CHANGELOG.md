@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1
+
+- First Marketplace release: extension icon, gallery metadata, and refreshed
+  documentation. No functional changes.
+
 ## 0.4.0
 
 - Lazy folder sizing: a folder's recursive size is computed when you expand it, or

@@ -1,10 +1,22 @@
 {
   "name": "strata-file-explorer",
   "displayName": "Strata – File Explorer",
-  "description": "A premium, native-feeling file explorer for VS Code — file sizes, modified dates, and folder sizes in clean sortable columns.",
-  "version": "0.4.0",
+  "description": "A lightweight, fast file explorer for VS Code — file & folder sizes, modified dates, and colorful icons in clean, sortable, resizable columns.",
+  "version": "0.4.1",
   "publisher": "FlashCosmos",
+  "author": {
+    "name": "FlashCosmos"
+  },
   "license": "MIT",
+  "icon": "media/logo.png",
+  "pricing": "Free",
+  "galleryBanner": {
+    "color": "#1e1e24",
+    "theme": "dark"
+  },
+  "extensionKind": [
+    "workspace"
+  ],
   "engines": {
     "vscode": "^1.84.0"
   },
@@ -19,11 +31,17 @@
     "file manager",
     "details view",
     "modified date",
-    "columns"
+    "columns",
+    "sidebar",
+    "lightweight"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/FlashCosmos/Strata-File-Explorer.git"
+  },
+  "homepage": "https://github.com/FlashCosmos/Strata-File-Explorer#readme",
+  "bugs": {
+    "url": "https://github.com/FlashCosmos/Strata-File-Explorer/issues"
   },
   "main": "./out/extension.js",
   "activationEvents": [],

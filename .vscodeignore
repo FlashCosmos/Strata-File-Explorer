@@ -10,4 +10,5 @@ tsconfig.json
 .gitignore
 .editorconfig
 CLAUDE.md
+media/logo.jpg
 *.vsix

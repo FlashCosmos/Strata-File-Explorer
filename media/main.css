@@ -1,0 +1,203 @@
+:root {
+  --strata-row-height: 22px;
+  --strata-size-width: 78px;
+  --strata-date-width: 100px;
+  --strata-indent: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--vscode-foreground);
+  background: var(--vscode-sideBar-background, var(--vscode-editor-background));
+  font-family: var(--vscode-font-family);
+  font-size: 13px;
+  line-height: var(--strata-row-height);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ---- Header ------------------------------------------------------------ */
+
+.header {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 6px 0 8px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--vscode-descriptionForeground);
+  background: var(--vscode-sideBar-background, var(--vscode-editor-background));
+  border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border, transparent);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.header .cell {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.header .cell:hover {
+  color: var(--vscode-foreground);
+}
+
+.header .sort-ind {
+  font-size: 13px;
+  width: 13px;
+  opacity: 0.9;
+}
+
+/* ---- Rows -------------------------------------------------------------- */
+
+#rows {
+  height: calc(100% - 24px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  outline: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  height: var(--strata-row-height);
+  padding-right: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.row:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+.row.selected {
+  background: var(--vscode-list-inactiveSelectionBackground);
+  color: var(--vscode-list-inactiveSelectionForeground, var(--vscode-foreground));
+}
+
+#rows:focus-within .row.selected {
+  background: var(--vscode-list-activeSelectionBackground);
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* ---- Cells ------------------------------------------------------------- */
+
+.cell {
+  overflow: hidden;
+}
+
+.cell.name {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.cell.size {
+  flex: 0 0 var(--strata-size-width);
+  width: var(--strata-size-width);
+  text-align: right;
+  color: var(--vscode-descriptionForeground);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.cell.date {
+  flex: 0 0 var(--strata-date-width);
+  width: var(--strata-date-width);
+  text-align: right;
+  color: var(--vscode-descriptionForeground);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  padding-left: 8px;
+}
+
+.row.selected .cell.size,
+.row.selected .cell.date {
+  color: inherit;
+}
+
+.size.pending {
+  opacity: 0.5;
+}
+
+/* ---- Name cell internals ---------------------------------------------- */
+
+.twisty {
+  flex: 0 0 16px;
+  width: 16px;
+  height: var(--strata-row-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--vscode-icon-foreground);
+  transition: transform 0.08s ease;
+}
+
+.row[data-dir="true"] > .cell.name > .twisty {
+  transform: rotate(0deg);
+}
+
+.row[data-dir="true"].expanded > .cell.name > .twisty {
+  transform: rotate(90deg);
+}
+
+.ficon {
+  flex: 0 0 16px;
+  width: 16px;
+  font-size: 16px;
+  margin-right: 6px;
+  color: var(--vscode-icon-foreground);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Empty state ------------------------------------------------------- */
+
+.empty {
+  padding: 12px;
+  color: var(--vscode-descriptionForeground);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ---- Scrollbar (match VS Code) ---------------------------------------- */
+
+#rows::-webkit-scrollbar {
+  width: 10px;
+}
+
+#rows::-webkit-scrollbar-thumb {
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+#rows::-webkit-scrollbar-thumb:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+#rows::-webkit-scrollbar-thumb:active {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}

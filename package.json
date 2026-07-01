@@ -1,0 +1,128 @@
+{
+  "name": "strata-file-explorer",
+  "displayName": "Strata – File Explorer",
+  "description": "A premium, native-feeling file explorer for VS Code — file sizes, modified dates, and folder sizes in clean sortable columns.",
+  "version": "0.1.0",
+  "publisher": "FlashCosmos",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.84.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "file size",
+    "folder size",
+    "file explorer",
+    "file manager",
+    "details view",
+    "modified date",
+    "columns"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FlashCosmos/Strata-File-Explorer.git"
+  },
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onView:strata.explorer"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "strata",
+          "title": "Strata",
+          "icon": "icons/strata.svg"
+        }
+      ]
+    },
+    "views": {
+      "strata": [
+        {
+          "id": "strata.explorer",
+          "name": "File Explorer",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "strata.refresh",
+        "title": "Refresh",
+        "category": "Strata",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "strata.collapseAll",
+        "title": "Collapse All",
+        "category": "Strata",
+        "icon": "$(collapse-all)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "strata.collapseAll",
+          "when": "view == strata.explorer",
+          "group": "navigation@1"
+        },
+        {
+          "command": "strata.refresh",
+          "when": "view == strata.explorer",
+          "group": "navigation@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Strata",
+      "properties": {
+        "strata.computeFolderSizes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Recursively compute folder sizes. Sizes are calculated in the background; disable this on very large trees if it feels slow."
+        },
+        "strata.foldersFirst": {
+          "type": "boolean",
+          "default": true,
+          "description": "Sort folders before files, matching the built-in Explorer."
+        },
+        "strata.excludeHidden": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide dot-files and dot-folders (e.g. .git, .env)."
+        },
+        "strata.sizeUnits": {
+          "type": "string",
+          "enum": [
+            "binary",
+            "decimal"
+          ],
+          "enumDescriptions": [
+            "1 KB = 1024 bytes (like Windows Explorer)",
+            "1 KB = 1000 bytes (SI units)"
+          ],
+          "default": "binary",
+          "description": "Unit base used when formatting sizes."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile && npm run copy-codicons",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "copy-codicons": "node ./scripts/copy-codicons.js",
+    "postinstall": "node ./scripts/copy-codicons.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "20.x",
+    "@types/vscode": "^1.84.0",
+    "@vscode/codicons": "^0.0.36",
+    "@vscode/vsce": "^3.2.2",
+    "typescript": "^5.4.5"
+  }
+}

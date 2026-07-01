@@ -1,8 +1,21 @@
 # Changelog
 
+## 1.0.0
+
+Initial public release. 🎉
+
+- Sidebar file explorer with sortable, resizable **Name / Size / Modified** columns.
+- File sizes plus **lazy folder sizes** (computed on expand or hover, so heavy trees
+  like `node_modules` never slow you down).
+- Relative modified times with full timestamps on hover.
+- Colorful, type-aware icons (bundled Material Icon Theme) and faint indent guides,
+  all matching your active color theme.
+- Works over Remote-SSH, Dev Containers, and WSL.
+- Lightweight: zero runtime dependencies, no telemetry, no network calls.
+
 ## 0.4.1
 
-- First Marketplace release: extension icon, gallery metadata, and refreshed
+- Marketplace preparation: extension icon, gallery metadata, screenshot, and refreshed
   documentation. No functional changes.
 
 ## 0.4.0

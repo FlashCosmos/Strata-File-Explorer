@@ -27,8 +27,9 @@ Because it reads file metadata through the extension host, it works transparentl
 **Remote-SSH**, Dev Containers, and WSL — connect to a remote machine and browse it with
 full size/date columns, as if you were local.
 
-<!-- Add a screenshot at media/screenshot.png and uncomment: -->
-<!-- ![Strata in action](media/screenshot.png) -->
+<p align="center">
+  <img src="media/screenshot.png" width="360" alt="Strata showing file and folder sizes with modified dates in the VS Code sidebar" />
+</p>
 
 ## Why Strata?
 

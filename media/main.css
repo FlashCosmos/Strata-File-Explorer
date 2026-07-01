@@ -2,7 +2,8 @@
   --strata-row-height: 22px;
   --strata-size-width: 78px;
   --strata-date-width: 100px;
-  --strata-indent: 8px;
+  --strata-indent: 14px;
+  --strata-guide: var(--vscode-tree-indentGuidesStroke, rgba(128, 128, 128, 0.25));
 }
 
 * {
@@ -53,6 +54,11 @@ body {
   white-space: nowrap;
 }
 
+.header .cell.size,
+.header .cell.date {
+  justify-content: flex-end;
+}
+
 .header .cell:hover {
   color: var(--vscode-foreground);
 }
@@ -76,6 +82,7 @@ body {
   display: flex;
   align-items: center;
   height: var(--strata-row-height);
+  padding-left: 8px;
   padding-right: 6px;
   white-space: nowrap;
   cursor: pointer;
@@ -105,7 +112,22 @@ body {
   flex: 1 1 auto;
   display: flex;
   align-items: center;
+  align-self: stretch;
   min-width: 0;
+}
+
+/* Indent guides: one stretched span per ancestor level, drawing a faint
+   vertical line at its horizontal centre (continuous across stacked rows). */
+.indent {
+  flex: 0 0 var(--strata-indent);
+  align-self: stretch;
+  background-image: linear-gradient(
+    to right,
+    transparent 7px,
+    var(--strata-guide) 7px,
+    var(--strata-guide) 8px,
+    transparent 8px
+  );
 }
 
 .cell.size {

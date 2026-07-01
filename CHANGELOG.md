@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0
+
+- Relative "Modified" column (`5m`, `3h`, `2d`, then `Jun 8` / `Jun 8, 2024`); full
+  timestamp still on hover.
+- Right-aligned Size/Modified column headers so labels sit over their values.
+- Faint indent guides connecting nested items, matching the native tree.
+
 ## 0.2.0
 
 - Colorful, type-aware file and folder icons via the bundled Material Icon Theme

@@ -26,7 +26,11 @@
 
   const sort = { key: "name", dir: 1 };
 
-  const dateFmt = new Intl.DateTimeFormat(undefined, {
+  const monthDayFmt = new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+  const monthDayYearFmt = new Intl.DateTimeFormat(undefined, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -70,7 +74,29 @@
   }
 
   function formatDate(ms) {
-    return ms ? dateFmt.format(new Date(ms)) : "";
+    if (!ms) {
+      return "";
+    }
+    const now = Date.now();
+    const diff = now - ms;
+    if (diff >= 0) {
+      if (diff < 60000) {
+        return "now";
+      }
+      if (diff < 3600000) {
+        return Math.floor(diff / 60000) + "m";
+      }
+      if (diff < 86400000) {
+        return Math.floor(diff / 3600000) + "h";
+      }
+      if (diff < 604800000) {
+        return Math.floor(diff / 86400000) + "d";
+      }
+    }
+    const d = new Date(ms);
+    return d.getFullYear() === new Date(now).getFullYear()
+      ? monthDayFmt.format(d)
+      : monthDayYearFmt.format(d);
   }
 
   // --- Node helpers -------------------------------------------------------
@@ -139,7 +165,10 @@
   // --- Rendering ----------------------------------------------------------
 
   function rowHtml(n) {
-    const pad = 8 + n.depth * 14;
+    let indent = "";
+    for (let i = 0; i < n.depth; i++) {
+      indent += '<span class="indent"></span>';
+    }
     const sel = n.id === selectedId ? " selected" : "";
     const exp = n.isDir && n.expanded ? " expanded" : "";
     const twisty = n.isDir ? "twisty codicon codicon-chevron-right" : "twisty";
@@ -165,8 +194,8 @@
       n.isDir && n.size == null && config.computeFolderSizes ? " pending" : "";
     const dtitle = n.mtime ? fullFmt.format(new Date(n.mtime)) : "";
     return (
-      `<div class="row${exp}${sel}" role="treeitem" data-id="${escapeHtml(n.id)}" data-dir="${n.isDir}" style="padding-left:${pad}px">` +
-      `<div class="cell name"><span class="${twisty}"></span>` +
+      `<div class="row${exp}${sel}" role="treeitem" data-id="${escapeHtml(n.id)}" data-dir="${n.isDir}">` +
+      `<div class="cell name">${indent}<span class="${twisty}"></span>` +
       iconHtml +
       `<span class="label">${escapeHtml(n.name)}</span></div>` +
       `<div class="cell size${pending}">${sizeText}</div>` +

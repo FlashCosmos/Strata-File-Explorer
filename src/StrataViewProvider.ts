@@ -23,6 +23,9 @@ export class StrataViewProvider implements vscode.WebviewViewProvider {
   private sizeQueue: Array<() => Promise<void>> = [];
   private activeSizeTasks = 0;
 
+  /** URI strings of the workspace-folder roots (never auto-sized). */
+  private rootIds = new Set<string>();
+
   private readonly theme: IconTheme;
 
   constructor(private readonly extensionUri: vscode.Uri) {
@@ -116,6 +119,12 @@ export class StrataViewProvider implements vscode.WebviewViewProvider {
       case "list":
         await this.sendChildren(String(msg.id));
         break;
+      case "sizeRequest":
+        // Hover-triggered size peek for a collapsed folder.
+        if (!this.rootIds.has(String(msg.id))) {
+          this.enqueueSize(String(msg.id), this.generation);
+        }
+        break;
       case "open":
         try {
           await vscode.window.showTextDocument(vscode.Uri.parse(String(msg.id)), {
@@ -133,9 +142,11 @@ export class StrataViewProvider implements vscode.WebviewViewProvider {
   private sendRoots(): void {
     const folders = vscode.workspace.workspaceFolders;
     if (!folders || folders.length === 0) {
+      this.rootIds.clear();
       this.post({ type: "noWorkspace" });
       return;
     }
+    this.rootIds = new Set(folders.map((f) => f.uri.toString()));
     const roots: Entry[] = folders.map((f) => ({
       id: f.uri.toString(),
       name: f.name,
@@ -173,12 +184,10 @@ export class StrataViewProvider implements vscode.WebviewViewProvider {
     this.decorate(entries);
     this.post({ type: "children", id, entries });
 
-    if (cfg.computeFolderSizes) {
-      for (const child of entries) {
-        if (child.isDir) {
-          this.enqueueSize(child.id, gen);
-        }
-      }
+    // Lazy sizing: compute a folder's own recursive size when it is expanded
+    // (i.e. listed). Never size workspace roots — that would walk everything.
+    if (cfg.computeFolderSizes && !this.rootIds.has(id)) {
+      this.enqueueSize(id, gen);
     }
   }
 
@@ -244,8 +253,8 @@ export class StrataViewProvider implements vscode.WebviewViewProvider {
 <body>
   <div id="header" class="header">
     <div class="cell name" data-sort="name">Name<span class="sort-ind codicon"></span></div>
-    <div class="cell size" data-sort="size">Size<span class="sort-ind codicon"></span></div>
-    <div class="cell date" data-sort="mtime">Modified<span class="sort-ind codicon"></span></div>
+    <div class="cell size" data-sort="size"><span class="resizer" data-col="size"></span>Size<span class="sort-ind codicon"></span></div>
+    <div class="cell date" data-sort="mtime"><span class="resizer" data-col="date"></span>Modified<span class="sort-ind codicon"></span></div>
   </div>
   <div id="rows" role="tree" tabindex="0"></div>
   <div id="empty" class="empty" hidden>Open a folder to see file details.</div>

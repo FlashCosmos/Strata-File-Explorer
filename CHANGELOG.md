@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+- Lazy folder sizing: a folder's recursive size is computed when you expand it, or
+  after briefly hovering it — so heavy trees like `node_modules` never run until you
+  ask. Workspace roots are never auto-sized.
+- Resizable Size and Modified columns (drag the header dividers); widths persist
+  across reloads.
+
 ## 0.3.0
 
 - Relative "Modified" column (`5m`, `3h`, `2d`, then `Jun 8` / `Jun 8, 2024`); full

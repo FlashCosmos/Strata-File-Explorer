@@ -16,6 +16,10 @@
   let visibleOrder = [];
   let selectedId = null;
   let iconsBase = "";
+  let lastHoverId = null;
+  let hoverTimer = null;
+  let resizing = null;
+  let suppressSortClick = false;
 
   let config = {
     computeFolderSizes: true,
@@ -115,6 +119,7 @@
       expanded: false,
       loaded: false,
       loading: false,
+      sizeRequested: false,
       childrenIds: null,
     };
   }
@@ -289,8 +294,13 @@
       return;
     }
     n.expanded = !n.expanded;
-    if (n.expanded && !n.loaded && !n.loading) {
-      requestList(id);
+    if (n.expanded) {
+      // The host sizes a folder when it is listed; mark it so a hover doesn't
+      // also request the same computation.
+      n.sizeRequested = true;
+      if (!n.loaded && !n.loading) {
+        requestList(id);
+      }
     }
     render();
   }
@@ -451,6 +461,9 @@
   });
 
   headerEl.addEventListener("click", (e) => {
+    if (suppressSortClick || e.target.closest(".resizer")) {
+      return;
+    }
     const cell = e.target.closest(".cell[data-sort]");
     if (!cell) {
       return;
@@ -528,7 +541,126 @@
     }
   });
 
+  // --- Hover-to-size ------------------------------------------------------
+
+  function clearHoverTimer() {
+    if (hoverTimer) {
+      clearTimeout(hoverTimer);
+      hoverTimer = null;
+    }
+  }
+
+  function scheduleHoverSize(id) {
+    if (id === lastHoverId) {
+      return;
+    }
+    lastHoverId = id;
+    clearHoverTimer();
+    const n = nodes.get(id);
+    if (
+      !n ||
+      !n.isDir ||
+      n.parentId == null || // never size roots
+      n.size != null ||
+      n.sizeRequested ||
+      !config.computeFolderSizes
+    ) {
+      return;
+    }
+    // Small delay so merely passing the cursor over a folder doesn't trigger a
+    // (potentially heavy) recursive walk.
+    hoverTimer = setTimeout(() => {
+      n.sizeRequested = true;
+      vscodeApi.postMessage({ type: "sizeRequest", id });
+    }, 400);
+  }
+
+  rowsEl.addEventListener("mouseover", (e) => {
+    const row = e.target.closest(".row");
+    if (row) {
+      scheduleHoverSize(row.dataset.id);
+    }
+  });
+
+  rowsEl.addEventListener("mouseleave", () => {
+    lastHoverId = null;
+    clearHoverTimer();
+  });
+
+  // --- Column resizing ----------------------------------------------------
+
+  function colVar(col) {
+    return col === "size" ? "--strata-size-width" : "--strata-date-width";
+  }
+
+  function currentWidth(col) {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(
+      colVar(col),
+    );
+    return parseInt(v, 10) || (col === "size" ? 78 : 100);
+  }
+
+  function saveColWidths() {
+    vscodeApi.setState({
+      colWidths: { size: currentWidth("size"), date: currentWidth("date") },
+    });
+  }
+
+  function onResizeMove(e) {
+    if (!resizing) {
+      return;
+    }
+    const delta = e.clientX - resizing.startX;
+    // Handles sit on the column's left edge: dragging left widens the column.
+    const w = Math.max(48, Math.min(360, resizing.startWidth - delta));
+    document.documentElement.style.setProperty(resizing.varName, w + "px");
+  }
+
+  function onResizeUp() {
+    window.removeEventListener("pointermove", onResizeMove);
+    document.body.style.cursor = "";
+    saveColWidths();
+    resizing = null;
+    setTimeout(() => {
+      suppressSortClick = false;
+    }, 0);
+  }
+
+  headerEl.addEventListener("pointerdown", (e) => {
+    const handle = e.target.closest(".resizer");
+    if (!handle) {
+      return;
+    }
+    e.preventDefault();
+    const col = handle.getAttribute("data-col");
+    resizing = {
+      col,
+      varName: colVar(col),
+      startX: e.clientX,
+      startWidth: currentWidth(col),
+    };
+    suppressSortClick = true;
+    document.body.style.cursor = "col-resize";
+    window.addEventListener("pointermove", onResizeMove);
+    window.addEventListener("pointerup", onResizeUp, { once: true });
+  });
+
+  function restoreColWidths() {
+    const saved = vscodeApi.getState();
+    if (saved && saved.colWidths) {
+      document.documentElement.style.setProperty(
+        "--strata-size-width",
+        saved.colWidths.size + "px",
+      );
+      document.documentElement.style.setProperty(
+        "--strata-date-width",
+        saved.colWidths.date + "px",
+      );
+    }
+  }
+
   // --- Boot ---------------------------------------------------------------
 
+  restoreColWidths();
   vscodeApi.postMessage({ type: "ready" });
 })();

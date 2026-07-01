@@ -2,7 +2,7 @@
   "name": "strata-file-explorer",
   "displayName": "Strata – File Explorer",
   "description": "A premium, native-feeling file explorer for VS Code — file sizes, modified dates, and folder sizes in clean sortable columns.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "FlashCosmos",
   "license": "MIT",
   "engines": {

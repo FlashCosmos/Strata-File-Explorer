@@ -10,6 +10,10 @@ export interface Entry {
   size: number | null;
   /** Last-modified time in epoch milliseconds (0 if unknown). */
   mtime: number;
+  /** Icon SVG filename (set by the host from the icon theme; optional). */
+  icon?: string | null;
+  /** Expanded-folder icon SVG filename (directories only). */
+  iconOpen?: string | null;
 }
 
 /**

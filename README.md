@@ -52,6 +52,11 @@ npm run package
 code --install-extension strata-file-explorer-0.1.0.vsix
 ```
 
+## Credits
+
+File-type icons are from the [Material Icon Theme](https://github.com/material-extensions/vscode-material-icon-theme)
+(MIT) by Philipp Kief. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
 ## License
 
 [MIT](LICENSE) © FlashCosmos

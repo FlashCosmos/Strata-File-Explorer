@@ -161,12 +161,19 @@ body {
 .ficon {
   flex: 0 0 16px;
   width: 16px;
+  height: 16px;
   font-size: 16px;
   margin-right: 6px;
   color: var(--vscode-icon-foreground);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+img.ficon {
+  object-fit: contain;
+  /* SVGs carry their own color; don't let selection recolor them */
+  -webkit-user-drag: none;
 }
 
 .label {

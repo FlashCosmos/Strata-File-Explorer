@@ -15,6 +15,7 @@
   /** @type {string[]} */
   let visibleOrder = [];
   let selectedId = null;
+  let iconsBase = "";
 
   let config = {
     computeFolderSizes: true,
@@ -81,6 +82,8 @@
       isDir: entry.isDir,
       size: entry.size,
       mtime: entry.mtime,
+      icon: entry.icon,
+      iconOpen: entry.iconOpen,
       depth,
       parentId,
       expanded: false,
@@ -140,11 +143,19 @@
     const sel = n.id === selectedId ? " selected" : "";
     const exp = n.isDir && n.expanded ? " expanded" : "";
     const twisty = n.isDir ? "twisty codicon codicon-chevron-right" : "twisty";
-    const icon = n.isDir
-      ? n.expanded
-        ? "codicon-folder-opened"
-        : "codicon-folder"
-      : "codicon-file";
+    const iconFile = n.isDir ? (n.expanded ? n.iconOpen : n.icon) : n.icon;
+    let iconHtml;
+    if (iconsBase && iconFile) {
+      iconHtml =
+        '<img class="ficon" src="' + iconsBase + "/" + iconFile + '" alt="" />';
+    } else {
+      const cic = n.isDir
+        ? n.expanded
+          ? "codicon-folder-opened"
+          : "codicon-folder"
+        : "codicon-file";
+      iconHtml = '<span class="ficon codicon ' + cic + '"></span>';
+    }
     const sizeText = n.isDir
       ? n.size == null
         ? ""
@@ -156,7 +167,7 @@
     return (
       `<div class="row${exp}${sel}" role="treeitem" data-id="${escapeHtml(n.id)}" data-dir="${n.isDir}" style="padding-left:${pad}px">` +
       `<div class="cell name"><span class="${twisty}"></span>` +
-      `<span class="ficon codicon ${icon}"></span>` +
+      iconHtml +
       `<span class="label">${escapeHtml(n.name)}</span></div>` +
       `<div class="cell size${pending}">${sizeText}</div>` +
       `<div class="cell date" title="${escapeHtml(dtitle)}">${formatDate(n.mtime)}</div>` +
@@ -293,6 +304,8 @@
         existing.name = e.name;
         existing.isDir = e.isDir;
         existing.mtime = e.mtime;
+        existing.icon = e.icon;
+        existing.iconOpen = e.iconOpen;
         existing.depth = parent.depth + 1;
         existing.parentId = id;
         // keep a previously computed folder size if the fresh listing has none
@@ -358,6 +371,9 @@
     switch (m.type) {
       case "config":
         config = m.config;
+        if (config.iconsBase) {
+          iconsBase = config.iconsBase;
+        }
         render();
         break;
       case "roots":

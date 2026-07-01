@@ -1,5 +1,7 @@
 import * as vscode from "vscode";
+import * as path from "path";
 import { Entry, listDirectory, directorySize } from "./fsUtils";
+import { IconTheme } from "./iconTheme";
 import { getNonce } from "./util";
 
 interface StrataConfig {
@@ -21,7 +23,13 @@ export class StrataViewProvider implements vscode.WebviewViewProvider {
   private sizeQueue: Array<() => Promise<void>> = [];
   private activeSizeTasks = 0;
 
-  constructor(private readonly extensionUri: vscode.Uri) {}
+  private readonly theme: IconTheme;
+
+  constructor(private readonly extensionUri: vscode.Uri) {
+    this.theme = new IconTheme(
+      path.join(extensionUri.fsPath, "media", "material-icons.json"),
+    );
+  }
 
   public resolveWebviewView(view: vscode.WebviewView): void {
     this.view = view;
@@ -38,7 +46,7 @@ export class StrataViewProvider implements vscode.WebviewViewProvider {
   public refresh(): void {
     this.generation++;
     this.sizeQueue = [];
-    this.post({ type: "config", config: this.config() });
+    this.postConfig();
     this.sendRoots();
   }
 
@@ -71,10 +79,38 @@ export class StrataViewProvider implements vscode.WebviewViewProvider {
     };
   }
 
+  private iconsBaseUri(): string {
+    if (!this.view) {
+      return "";
+    }
+    return this.view.webview
+      .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, "media", "icons"))
+      .toString();
+  }
+
+  private postConfig(): void {
+    this.post({
+      type: "config",
+      config: { ...this.config(), iconsBase: this.iconsBaseUri() },
+    });
+  }
+
+  /** Attaches icon-theme SVG filenames to entries in place. */
+  private decorate(entries: Entry[]): void {
+    for (const e of entries) {
+      if (e.isDir) {
+        e.icon = this.theme.folderIcon(e.name, false);
+        e.iconOpen = this.theme.folderIcon(e.name, true);
+      } else {
+        e.icon = this.theme.fileIcon(e.name);
+      }
+    }
+  }
+
   private async onMessage(msg: any): Promise<void> {
     switch (msg?.type) {
       case "ready":
-        this.post({ type: "config", config: this.config() });
+        this.postConfig();
         this.sendRoots();
         break;
       case "list":
@@ -106,6 +142,8 @@ export class StrataViewProvider implements vscode.WebviewViewProvider {
       isDir: true,
       size: null,
       mtime: 0,
+      icon: this.theme.folderIcon(f.name, false),
+      iconOpen: this.theme.folderIcon(f.name, true),
     }));
     this.post({ type: "roots", roots });
   }
@@ -132,6 +170,7 @@ export class StrataViewProvider implements vscode.WebviewViewProvider {
     if (gen !== this.generation) {
       return;
     }
+    this.decorate(entries);
     this.post({ type: "children", id, entries });
 
     if (cfg.computeFolderSizes) {
